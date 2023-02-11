@@ -8,6 +8,7 @@ using Tomlet;
 using UnityEngine;
 using static MuseDashMirror.BattleComponent;
 using static MuseDashMirror.PlayerData;
+using static ChartReview.Save;
 
 namespace ChartReview
 {
@@ -21,7 +22,10 @@ namespace ChartReview
 
         public override void OnInitializeMelon()
         {
-            Save.Load();
+            Load();
+            LastCharacter = data.LastCharacter;
+            LastElfin = data.LastElfin;
+            LastOffset = data.LastOffset;
             PatchEvents.PnlMenuEvent += new Action<PnlMenu>(Patch.PnlMenuPostfix);
             PatchEvents.SwitchLanguagesEvent += new Action(Patch.SwitchLanguagesPostfix);
             PatchEvents.MenuSelectEvent += new Action<int, int, bool>(DisableToggle);
@@ -32,12 +36,15 @@ namespace ChartReview
 
         public override void OnDeinitializeMelon()
         {
-            File.WriteAllText(Path.Combine("UserData", "ChartReview.cfg"), TomletMain.TomlStringFrom(Save.data));
+            data.LastCharacter = LastCharacter;
+            data.LastElfin = LastElfin;
+            data.LastOffset = LastOffset;
+            File.WriteAllText(Path.Combine("UserData", "ChartReview.cfg"), TomletMain.TomlStringFrom(data));
         }
 
         private void ChangeSettings()
         {
-            if (Save.data.ChartReviewEnabled)
+            if (data.ChartReviewEnabled)
             {
                 LastCharacter = SelectedCharacterIndex;
                 LastElfin = SelectedElfinIndex;
@@ -48,7 +55,7 @@ namespace ChartReview
                 SetOffset(0);
                 SetAutoFever(false);
             }
-            else if (!Save.data.ChartReviewEnabled && LastCharacter != 2 && LastElfin != -1)
+            else
             {
                 SetCharacter(LastCharacter);
                 SetElfin(LastElfin);
@@ -60,7 +67,7 @@ namespace ChartReview
         private void DisableUI()
         {
             // if is in game scene and objects are not disabled
-            if (Save.data.ChartReviewEnabled)
+            if (data.ChartReviewEnabled)
             {
                 GameObject.Find("Below").SetActive(false);
                 GameObject.Find("Score").SetActive(false);

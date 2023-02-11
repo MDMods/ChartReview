@@ -48,7 +48,7 @@ namespace ChartReview
                 SetOffset(0);
                 SetAutoFever(false);
             }
-            else
+            else if (!Save.data.ChartReviewEnabled && LastCharacter != 2 && LastElfin != -1)
             {
                 SetCharacter(LastCharacter);
                 SetElfin(LastElfin);

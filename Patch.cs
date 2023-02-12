@@ -24,7 +24,7 @@ namespace ChartReview
             {
                 if (ChartReviewToggle == null && vSelect != null)
                 {
-                    ChartReviewToggle = ToggleCreate.CreatePnlMenuToggle("Chart Review Toggle", new Vector3(-6.8f, -3.55f, 100f), chartReviewEnabled, "Chart Review On/Off");
+                    ChartReviewToggle = ToggleCreate.CreatePnlMenuToggle("Chart Review Toggle", chartReviewEnabled, "Chart Review On/Off");
                 }
             }
         }

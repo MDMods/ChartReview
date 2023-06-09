@@ -6,44 +6,32 @@ namespace ChartReview;
 
 internal static class Save
 {
-    internal static Data data = new();
+    internal static Data Data = new();
 
     public static void Load()
     {
         if (!File.Exists(Path.Combine("UserData", "ChartReview.cfg")))
         {
-            var defaultConfig = TomletMain.TomlStringFrom(data);
+            var defaultConfig = TomletMain.TomlStringFrom(Data);
             File.WriteAllText(Path.Combine("UserData", "ChartReview.cfg"), defaultConfig);
         }
 
-        var enabled = File.ReadAllText(Path.Combine("UserData", "ChartReview.cfg"));
-        data = TomletMain.To<Data>(enabled);
+        var data = File.ReadAllText(Path.Combine("UserData", "ChartReview.cfg"));
+        Data = TomletMain.To<Data>(data);
     }
 }
 
-internal struct Data
+public class Data
 {
     [TomlPrecedingComment("Whether the chart review is enabled")]
-    internal bool ChartReviewEnabled = false;
+    internal bool ChartReviewEnabled;
 
     [TomlPrecedingComment("The character before enable chart review")]
-    internal int LastCharacter = 0;
+    internal int LastCharacter { get; set; }
 
     [TomlPrecedingComment("The elfin before enable chart review")]
-    internal int LastElfin = -1;
+    internal int LastElfin { get; set; } = -1;
 
     [TomlPrecedingComment("The offset before enable chart review")]
-    internal int LastOffset = 0;
-
-    public Data()
-    {
-    }
-
-    public Data(bool chartReviewEnabled, int lastCharacter, int lastElfin, int lastOffset)
-    {
-        ChartReviewEnabled = chartReviewEnabled;
-        LastCharacter = lastCharacter;
-        LastElfin = lastElfin;
-        LastOffset = lastOffset;
-    }
+    internal int LastOffset { get; set; }
 }

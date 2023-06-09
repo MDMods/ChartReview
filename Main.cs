@@ -1,7 +1,6 @@
 ﻿using System.IO;
 using MelonLoader;
 using MuseDashMirror.CommonPatches;
-using MuseDashMirror.UICreate;
 using Tomlet;
 using UnityEngine;
 using static MuseDashMirror.BattleComponent;
@@ -21,28 +20,27 @@ internal class Main : MelonMod
     public override void OnInitializeMelon()
     {
         Load();
-        LastCharacter = data.LastCharacter;
-        LastElfin = data.LastElfin;
-        LastOffset = data.LastOffset;
+        LastCharacter = Save.Data.LastCharacter;
+        LastElfin = Save.Data.LastElfin;
+        LastOffset = Save.Data.LastOffset;
         PatchEvents.PnlMenuEvent += Patch.PnlMenuPostfix;
         PatchEvents.SwitchLanguagesEvent += Patch.SwitchLanguagesPostfix;
         PatchEvents.MenuSelectEvent += DisableToggle;
         GameStartEvent += DisableUI;
-        ToggleCreate.OnToggleClick += ChangeSettings;
         MelonLogger.Msg("Chart Review is loaded!");
     }
 
     public override void OnDeinitializeMelon()
     {
-        data.LastCharacter = LastCharacter;
-        data.LastElfin = LastElfin;
-        data.LastOffset = LastOffset;
-        File.WriteAllText(Path.Combine("UserData", "ChartReview.cfg"), TomletMain.TomlStringFrom(data));
+        Save.Data.LastCharacter = SelectedCharacterIndex == 2 ? LastCharacter : SelectedCharacterIndex;
+        Save.Data.LastElfin = SelectedElfinIndex == -1 ? SelectedElfinIndex : LastElfin;
+        Save.Data.LastOffset = Offset == 0 ? LastOffset : Offset;
+        File.WriteAllText(Path.Combine("UserData", "ChartReview.cfg"), TomletMain.TomlStringFrom(Save.Data));
     }
 
-    private void ChangeSettings()
+    internal static void ChangeSettings()
     {
-        if (data.ChartReviewEnabled)
+        if (Save.Data.ChartReviewEnabled)
         {
             LastCharacter = SelectedCharacterIndex;
             LastElfin = SelectedElfinIndex;
@@ -62,10 +60,10 @@ internal class Main : MelonMod
         }
     }
 
-    private void DisableUI()
+    private static void DisableUI()
     {
         // if is in game scene and objects are not disabled
-        if (data.ChartReviewEnabled)
+        if (Save.Data.ChartReviewEnabled)
         {
             GameObject.Find("Below").SetActive(false);
             GameObject.Find("Score").SetActive(false);
@@ -74,7 +72,7 @@ internal class Main : MelonMod
         }
     }
 
-    private void DisableToggle(int listIndex, int index, bool isOn)
+    private static void DisableToggle(int listIndex, int index, bool isOn)
     {
         if (listIndex == 0 && index == 0 && isOn)
             Patch.ChartReviewToggle.SetActive(true);
